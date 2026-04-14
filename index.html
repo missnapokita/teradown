@@ -13,15 +13,26 @@
 
   <input type="text" id="videoUrl" placeholder="Paste Terabox link here">
 
+  <br>
+
   <button onclick="loadVideo()">Load Video</button>
+
+  <br>
 
   <video id="videoPlayer" controls></video>
 
-  <button onclick="shareVideo()">Share</button>
+  <br>
+
+  <!-- 🔥 SHARE BUTTON -->
+  <button onclick="shareVideo()">Share Embed Link</button>
+
+  <!-- 🔥 COPY EMBED CODE BUTTON -->
+  <button onclick="copyEmbedCode()">Copy Embed Code</button>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="script.js"></script>
+
 </body>
 </html>

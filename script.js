@@ -56,7 +56,7 @@ async function loadVideo() {
   }
 }
 
-// 🔥 SHARE BUTTON = EMBED STREAM LINK
+// 🔥 SHARE BUTTON = EMBED PLAYER LINK (FIXED)
 function shareVideo() {
 
   if (!currentStreamUrl) {
@@ -64,14 +64,20 @@ function shareVideo() {
     return;
   }
 
+  // ✅ CREATE EMBED PLAYER LINK
+  const embedLink =
+    window.location.origin +
+    "/player.html?video=" +
+    encodeURIComponent(currentStreamUrl);
+
   if (navigator.share) {
     navigator.share({
       title: "Terabox Video",
       text: "Watch this video",
-      url: currentStreamUrl
+      url: embedLink
     });
   } else {
-    navigator.clipboard.writeText(currentStreamUrl);
-    alert("Embed video link copied!");
+    navigator.clipboard.writeText(embedLink);
+    alert("Embed player link copied!");
   }
 }

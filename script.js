@@ -29,10 +29,24 @@ async function loadVideo() {
 
     const videoData = data.list[0];
 
-    let streamUrl =
-      videoData.fast_stream_url["480p"] ||
-      videoData.fast_stream_url["360p"];
+    // 🔥 AUTO PICK BEST QUALITY
+    let streamUrl = "";
 
+    if (videoData.fast_stream_url["720p"]) {
+      streamUrl = videoData.fast_stream_url["720p"];
+    } else if (videoData.fast_stream_url["480p"]) {
+      streamUrl = videoData.fast_stream_url["480p"];
+    } else if (videoData.fast_stream_url["360p"]) {
+      streamUrl = videoData.fast_stream_url["360p"];
+    }
+
+    // ❗ DOUBLE CHECK
+    if (!streamUrl) {
+      alert("No stream available!");
+      return;
+    }
+
+    // ✅ SAVE STREAM (ETO ANG IMPORTANTE)
     currentStreamUrl = streamUrl;
 
     const video = document.getElementById("videoPlayer");
@@ -43,8 +57,6 @@ async function loadVideo() {
       hls.attachMedia(video);
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = streamUrl;
-    } else {
-      alert("HLS not supported");
     }
 
   } catch (error) {
@@ -53,17 +65,16 @@ async function loadVideo() {
   }
 }
 
-// 🔥 GET EMBED LINK FUNCTION
+// 🔥 EMBED LINK GENERATOR
 function getEmbedLink() {
-  return (
-    window.location.origin +
+  return window.location.origin +
     "/player.html?video=" +
-    encodeURIComponent(currentStreamUrl)
-  );
+    encodeURIComponent(currentStreamUrl);
 }
 
-// 🔥 SHARE EMBED LINK
+// 🔥 SHARE BUTTON (FIXED)
 function shareVideo() {
+
   if (!currentStreamUrl) {
     alert("Load video first!");
     return;
@@ -78,12 +89,13 @@ function shareVideo() {
     });
   } else {
     navigator.clipboard.writeText(embedLink);
-    alert("Embed link copied!");
+    alert("Embed player link copied!");
   }
 }
 
-// 🔥 COPY EMBED HTML CODE (NEW 🔥)
+// 🔥 COPY EMBED CODE
 function copyEmbedCode() {
+
   if (!currentStreamUrl) {
     alert("Load video first!");
     return;

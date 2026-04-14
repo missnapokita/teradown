@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Terabox Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+  <h2>Terabox Video Player</h2>
+
+  <input type="text" id="videoUrl" placeholder="Paste Terabox link here">
+
+  <button onclick="loadVideo()">Load Video</button>
+
+  <div class="player">
+    <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
+  </div>
+
+  <button onclick="shareVideo()">Share</button>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

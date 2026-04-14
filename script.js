@@ -1,3 +1,6 @@
+// 🔥 GLOBAL STREAM LINK (for share)
+let currentStreamUrl = "";
+
 async function loadVideo() {
   const url = document.getElementById("videoUrl").value;
 
@@ -28,8 +31,11 @@ async function loadVideo() {
 
     const videoData = data.list[0];
 
-    // 🔥 get best quality stream
+    // 🔥 GET BEST QUALITY STREAM
     let streamUrl = videoData.fast_stream_url["480p"] || videoData.fast_stream_url["360p"];
+
+    // ✅ SAVE FOR SHARE BUTTON
+    currentStreamUrl = streamUrl;
 
     const video = document.getElementById("videoPlayer");
 
@@ -41,7 +47,7 @@ async function loadVideo() {
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = streamUrl;
     } else {
-      alert("HLS not supported");
+      alert("HLS not supported on this device");
     }
 
   } catch (error) {
@@ -50,11 +56,11 @@ async function loadVideo() {
   }
 }
 
+// 🔥 SHARE BUTTON = EMBED STREAM LINK
 function shareVideo() {
-  const url = document.getElementById("videoUrl").value;
 
-  if (!url) {
-    alert("No video to share!");
+  if (!currentStreamUrl) {
+    alert("Load video first!");
     return;
   }
 
@@ -62,10 +68,10 @@ function shareVideo() {
     navigator.share({
       title: "Terabox Video",
       text: "Watch this video",
-      url: url
+      url: currentStreamUrl
     });
   } else {
-    navigator.clipboard.writeText(url);
-    alert("Link copied!");
+    navigator.clipboard.writeText(currentStreamUrl);
+    alert("Embed video link copied!");
   }
 }

@@ -1,4 +1,4 @@
-// 🔥 GLOBAL STREAM LINK (for share)
+// 🔥 GLOBAL STREAM LINK
 let currentStreamUrl = "";
 
 async function loadVideo() {
@@ -16,9 +16,7 @@ async function loadVideo() {
         "Content-Type": "application/json",
         "xAPIverse-Key": "sk_9426e8f42e6b15560945f64bb1158418"
       },
-      body: JSON.stringify({
-        url: url
-      })
+      body: JSON.stringify({ url: url })
     });
 
     const data = await response.json();
@@ -31,15 +29,14 @@ async function loadVideo() {
 
     const videoData = data.list[0];
 
-    // 🔥 GET BEST QUALITY STREAM
-    let streamUrl = videoData.fast_stream_url["480p"] || videoData.fast_stream_url["360p"];
+    let streamUrl =
+      videoData.fast_stream_url["480p"] ||
+      videoData.fast_stream_url["360p"];
 
-    // ✅ SAVE FOR SHARE BUTTON
     currentStreamUrl = streamUrl;
 
     const video = document.getElementById("videoPlayer");
 
-    // ✅ HLS PLAYER
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(streamUrl);
@@ -47,7 +44,7 @@ async function loadVideo() {
     } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
       video.src = streamUrl;
     } else {
-      alert("HLS not supported on this device");
+      alert("HLS not supported");
     }
 
   } catch (error) {
@@ -56,28 +53,46 @@ async function loadVideo() {
   }
 }
 
-// 🔥 SHARE BUTTON = EMBED PLAYER LINK (FIXED)
-function shareVideo() {
+// 🔥 GET EMBED LINK FUNCTION
+function getEmbedLink() {
+  return (
+    window.location.origin +
+    "/player.html?video=" +
+    encodeURIComponent(currentStreamUrl)
+  );
+}
 
+// 🔥 SHARE EMBED LINK
+function shareVideo() {
   if (!currentStreamUrl) {
     alert("Load video first!");
     return;
   }
 
-  // ✅ CREATE EMBED PLAYER LINK
-  const embedLink =
-    window.location.origin +
-    "/player.html?video=" +
-    encodeURIComponent(currentStreamUrl);
+  const embedLink = getEmbedLink();
 
   if (navigator.share) {
     navigator.share({
-      title: "Terabox Video",
-      text: "Watch this video",
+      title: "Video Player",
       url: embedLink
     });
   } else {
     navigator.clipboard.writeText(embedLink);
-    alert("Embed player link copied!");
+    alert("Embed link copied!");
   }
+}
+
+// 🔥 COPY EMBED HTML CODE (NEW 🔥)
+function copyEmbedCode() {
+  if (!currentStreamUrl) {
+    alert("Load video first!");
+    return;
+  }
+
+  const embedLink = getEmbedLink();
+
+  const embedCode = `<iframe src="${embedLink}" width="100%" height="500" frameborder="0" allowfullscreen></iframe>`;
+
+  navigator.clipboard.writeText(embedCode);
+  alert("Embed HTML code copied!");
 }

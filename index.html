@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Terabox Player</title>
+  <title>Terabox Player API</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,14 +15,13 @@
 
   <button onclick="loadVideo()">Load Video</button>
 
-  <div class="player">
-    <iframe id="videoFrame" src="" frameborder="0" allowfullscreen></iframe>
-  </div>
+  <video id="videoPlayer" controls></video>
 
   <button onclick="shareVideo()">Share</button>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <script src="script.js"></script>
 </body>
 </html>

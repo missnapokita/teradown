@@ -44,6 +44,11 @@ button {
   color: white;
 }
 
+.play {
+  background: #f59e0b;
+  color: black;
+}
+
 .result {
   margin-top: 20px;
   background: #1e293b;
@@ -122,18 +127,21 @@ async function runAPI() {
         <div class="link-box">
           Fast Stream 720p:<br>${stream720}
           <button class="copy" onclick="copyText('${stream720}')">Copy</button>
+          <button class="play" onclick="playVideo('${stream720}')">▶ Play 720p</button>
         </div>` : ""}
 
         ${stream480 ? `
         <div class="link-box">
           Fast Stream 480p:<br>${stream480}
           <button class="copy" onclick="copyText('${stream480}')">Copy</button>
+          <button class="play" onclick="playVideo('${stream480}')">▶ Play 480p</button>
         </div>` : ""}
 
         ${stream360 ? `
         <div class="link-box">
           Fast Stream 360p:<br>${stream360}
           <button class="copy" onclick="copyText('${stream360}')">Copy</button>
+          <button class="play" onclick="playVideo('${stream360}')">▶ Play 360p</button>
         </div>` : ""}
 
         <div class="link-box">
@@ -156,6 +164,12 @@ function copyText(text) {
   if (!text) return alert("No link available");
   navigator.clipboard.writeText(text);
   alert("Copied!");
+}
+
+// 👉 PLAYER FUNCTION (NEW)
+function playVideo(url) {
+  if (!url) return alert("No video available");
+  window.open("player.html?url=" + encodeURIComponent(url), "_blank");
 }
 </script>
 

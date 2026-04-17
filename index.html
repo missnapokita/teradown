@@ -125,29 +125,30 @@ async function runAPI() {
 
         ${stream720 ? `
         <div class="link-box">
-          Fast Stream 720p:<br>${stream720}
+          720p:<br>${stream720}
           <button class="copy" onclick="copyText('${stream720}')">Copy</button>
-          <button class="play" onclick="playVideo('${stream720}')">▶ Play 720p</button>
         </div>` : ""}
 
         ${stream480 ? `
         <div class="link-box">
-          Fast Stream 480p:<br>${stream480}
+          480p:<br>${stream480}
           <button class="copy" onclick="copyText('${stream480}')">Copy</button>
-          <button class="play" onclick="playVideo('${stream480}')">▶ Play 480p</button>
         </div>` : ""}
 
         ${stream360 ? `
         <div class="link-box">
-          Fast Stream 360p:<br>${stream360}
+          360p:<br>${stream360}
           <button class="copy" onclick="copyText('${stream360}')">Copy</button>
-          <button class="play" onclick="playVideo('${stream360}')">▶ Play 360p</button>
         </div>` : ""}
 
         <div class="link-box">
           Subtitle:<br>${item.subtitle_url || "N/A"}
           <button class="copy" onclick="copyText('${item.subtitle_url || ""}')">Copy</button>
         </div>
+
+        <button class="play" onclick="playVideo('${stream360}','${stream480}','${stream720}')">
+          ▶ Play Video
+        </button>
 
         <hr>
       `;
@@ -166,10 +167,14 @@ function copyText(text) {
   alert("Copied!");
 }
 
-// 👉 PLAYER FUNCTION (NEW)
-function playVideo(url) {
-  if (!url) return alert("No video available");
-  window.open("player.html?url=" + encodeURIComponent(url), "_blank");
+// 🔥 UPDATED PLAYER FUNCTION
+function playVideo(q360, q480, q720) {
+  window.open(
+    "player.html?q360=" + encodeURIComponent(q360 || "") +
+    "&q480=" + encodeURIComponent(q480 || "") +
+    "&q720=" + encodeURIComponent(q720 || ""),
+    "_blank"
+  );
 }
 </script>
 

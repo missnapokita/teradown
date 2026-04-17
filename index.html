@@ -103,24 +103,42 @@ async function runAPI() {
     let html = "";
 
     data.list.forEach(item => {
+
+      const stream360 = item.fast_stream_url?.["360p"] || "";
+      const stream480 = item.fast_stream_url?.["480p"] || "";
+      const stream720 = item.fast_stream_url?.["720p"] || "";
+
       html += `
         <h3>${item.name}</h3>
         <p>Size: ${item.size_formatted}</p>
         <p>Quality: ${item.quality}</p>
-        
+
         <div class="link-box">
           Normal Link:<br>${item.normal_dlink}
           <button class="copy" onclick="copyText('${item.normal_dlink}')">Copy</button>
         </div>
 
+        ${stream720 ? `
         <div class="link-box">
-          Fast Stream (480p):<br>${item.fast_stream_url["480p"] || ""}
-          <button class="copy" onclick="copyText('${item.fast_stream_url["480p"] || ""}')">Copy</button>
-        </div>
+          Fast Stream 720p:<br>${stream720}
+          <button class="copy" onclick="copyText('${stream720}')">Copy</button>
+        </div>` : ""}
+
+        ${stream480 ? `
+        <div class="link-box">
+          Fast Stream 480p:<br>${stream480}
+          <button class="copy" onclick="copyText('${stream480}')">Copy</button>
+        </div>` : ""}
+
+        ${stream360 ? `
+        <div class="link-box">
+          Fast Stream 360p:<br>${stream360}
+          <button class="copy" onclick="copyText('${stream360}')">Copy</button>
+        </div>` : ""}
 
         <div class="link-box">
-          Subtitle:<br>${item.subtitle_url}
-          <button class="copy" onclick="copyText('${item.subtitle_url}')">Copy</button>
+          Subtitle:<br>${item.subtitle_url || "N/A"}
+          <button class="copy" onclick="copyText('${item.subtitle_url || ""}')">Copy</button>
         </div>
 
         <hr>
@@ -135,6 +153,7 @@ async function runAPI() {
 }
 
 function copyText(text) {
+  if (!text) return alert("No link available");
   navigator.clipboard.writeText(text);
   alert("Copied!");
 }

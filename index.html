@@ -2,46 +2,54 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>TeraBox API Tool</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TeraBox Tool</title>
 
 <style>
 body {
+  margin: 0;
   font-family: Arial;
   background: #0f172a;
   color: white;
-  padding: 20px;
 }
 
+/* container */
 .container {
-  max-width: 600px;
-  margin: auto;
+  padding: 15px;
 }
 
+/* title */
+h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+/* input */
 input {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 14px;
+  border-radius: 10px;
   border: none;
   margin-bottom: 10px;
+  font-size: 14px;
 }
 
+/* buttons */
 button {
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  margin: 5px 0;
   width: 100%;
-  cursor: pointer;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  margin-top: 8px;
+  font-size: 15px;
 }
 
 .run {
   background: #22c55e;
-  color: white;
 }
 
 .copy {
   background: #3b82f6;
-  color: white;
 }
 
 .play {
@@ -49,19 +57,28 @@ button {
   color: black;
 }
 
-.result {
-  margin-top: 20px;
+/* card result */
+.card {
   background: #1e293b;
   padding: 15px;
-  border-radius: 10px;
+  border-radius: 12px;
+  margin-top: 15px;
 }
 
+/* link box */
 .link-box {
-  margin-top: 10px;
-  padding: 10px;
   background: #334155;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+  font-size: 12px;
   word-break: break-all;
+}
+
+/* label */
+.label {
+  font-size: 12px;
+  opacity: 0.7;
 }
 </style>
 
@@ -71,13 +88,13 @@ button {
 
 <div class="container">
 
-<h2>TeraBox Link Extractor</h2>
+<h2>TeraBox Extractor</h2>
 
-<input id="urlInput" placeholder="Paste TeraBox link here...">
+<input id="urlInput" placeholder="Paste TeraBox link...">
 
 <button class="run" onclick="runAPI()">RUN</button>
 
-<div id="output" class="result"></div>
+<div id="output"></div>
 
 </div>
 
@@ -114,43 +131,38 @@ async function runAPI() {
       const stream720 = item.fast_stream_url?.["720p"] || "";
 
       html += `
+      <div class="card">
         <h3>${item.name}</h3>
-        <p>Size: ${item.size_formatted}</p>
-        <p>Quality: ${item.quality}</p>
+        <div class="label">Size: ${item.size_formatted}</div>
 
         <div class="link-box">
-          Normal Link:<br>${item.normal_dlink}
+          <b>Download:</b><br>${item.normal_dlink}
           <button class="copy" onclick="copyText('${item.normal_dlink}')">Copy</button>
         </div>
 
         ${stream720 ? `
         <div class="link-box">
-          720p:<br>${stream720}
+          <b>720p</b><br>${stream720}
           <button class="copy" onclick="copyText('${stream720}')">Copy</button>
         </div>` : ""}
 
         ${stream480 ? `
         <div class="link-box">
-          480p:<br>${stream480}
+          <b>480p</b><br>${stream480}
           <button class="copy" onclick="copyText('${stream480}')">Copy</button>
         </div>` : ""}
 
         ${stream360 ? `
         <div class="link-box">
-          360p:<br>${stream360}
+          <b>360p</b><br>${stream360}
           <button class="copy" onclick="copyText('${stream360}')">Copy</button>
         </div>` : ""}
 
-        <div class="link-box">
-          Subtitle:<br>${item.subtitle_url || "N/A"}
-          <button class="copy" onclick="copyText('${item.subtitle_url || ""}')">Copy</button>
-        </div>
-
         <button class="play" onclick="playVideo('${stream360}','${stream480}','${stream720}')">
-          ▶ Play Video
+          ▶ Watch Now
         </button>
 
-        <hr>
+      </div>
       `;
     });
 
@@ -162,12 +174,12 @@ async function runAPI() {
 }
 
 function copyText(text) {
-  if (!text) return alert("No link available");
+  if (!text) return alert("No link");
   navigator.clipboard.writeText(text);
   alert("Copied!");
 }
 
-// 🔥 UPDATED PLAYER FUNCTION
+// player open
 function playVideo(q360, q480, q720) {
   window.open(
     "player.html?q360=" + encodeURIComponent(q360 || "") +

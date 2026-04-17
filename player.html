@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Video Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Player</title>
 
 <style>
 body {
@@ -13,17 +13,14 @@ body {
   overflow: hidden;
 }
 
-/* container full mobile */
+/* container */
 .video-container {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  background: black;
 }
 
-/* video fix (no zoom) */
+/* video */
 video {
   width: 100%;
   height: 100%;
@@ -31,41 +28,39 @@ video {
   background: black;
 }
 
-/* gradient */
+/* overlay */
 .overlay {
   position: absolute;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 50%);
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent 60%);
   pointer-events: none;
 }
 
-/* center play */
+/* center button */
 .center-play {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 60px;
+  transform: translate(-50%,-50%);
+  font-size: 70px;
   background: rgba(0,0,0,0.6);
-  border-radius: 50%;
   padding: 25px;
-  cursor: pointer;
+  border-radius: 50%;
 }
 
 /* controls */
 .controls {
   position: absolute;
-  bottom: 10px;
+  bottom: 0;
   width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
+  padding: 15px;
 }
 
 /* progress */
 .progress {
   width: 100%;
-  height: 5px;
+  height: 4px;
 }
 
 /* buttons */
@@ -75,6 +70,11 @@ video {
   margin-top: 10px;
 }
 
+.left, .right {
+  display: flex;
+  gap: 10px;
+}
+
 button {
   background: rgba(0,0,0,0.7);
   border: none;
@@ -82,6 +82,23 @@ button {
   padding: 14px;
   border-radius: 50%;
   font-size: 18px;
+}
+
+/* top bar */
+.topbar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.quality {
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border-radius: 6px;
+  padding: 5px;
 }
 </style>
 
@@ -97,16 +114,24 @@ button {
 
 <div id="centerPlay" class="center-play">▶</div>
 
+<!-- TOP BAR -->
+<div class="topbar">
+  <button onclick="goBack()">←</button>
+  <select id="qualitySelect" class="quality"></select>
+</div>
+
+<!-- CONTROLS -->
 <div class="controls">
-  <input type="range" id="progress" class="progress" value="0">
+  <input type="range" id="progress" class="progress">
 
   <div class="buttons">
-    <div>
-      <button onclick="togglePlay()">⏯</button>
+    <div class="left">
       <button onclick="rewind()">⏪</button>
+      <button onclick="togglePlay()">⏯</button>
       <button onclick="forward()">⏩</button>
     </div>
-    <div>
+
+    <div class="right">
       <button onclick="toggleFullscreen()">⛶</button>
     </div>
   </div>
@@ -120,78 +145,95 @@ button {
 const video = document.getElementById('video');
 const progress = document.getElementById('progress');
 const centerPlay = document.getElementById('centerPlay');
+const qualitySelect = document.getElementById('qualitySelect');
 
-// get URL
 const params = new URLSearchParams(window.location.search);
-const videoSrc = params.get("url");
 
-if (!videoSrc) {
-  alert("No video URL");
-}
+// GET ALL QUALITIES
+const q360 = params.get("q360");
+const q480 = params.get("q480");
+const q720 = params.get("q720");
 
-// HLS
-if (Hls.isSupported()) {
-  const hls = new Hls();
-  hls.loadSource(videoSrc);
-  hls.attachMedia(video);
-} else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-  video.src = videoSrc;
-}
+// default
+let currentSrc = q720 || q480 || q360;
 
-// autoplay
-video.addEventListener("loadedmetadata", () => {
-  video.play();
-});
+// populate dropdown
+if (q720) qualitySelect.innerHTML += `<option value="${q720}">720p</option>`;
+if (q480) qualitySelect.innerHTML += `<option value="${q480}">480p</option>`;
+if (q360) qualitySelect.innerHTML += `<option value="${q360}">360p</option>`;
 
-// play toggle
-centerPlay.onclick = togglePlay;
+// change quality
+qualitySelect.onchange = () => loadVideo(qualitySelect.value);
 
-function togglePlay() {
-  if (video.paused) {
-    video.play();
-    centerPlay.style.display = "none";
+// load video
+function loadVideo(src) {
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource(src);
+    hls.attachMedia(video);
   } else {
-    video.pause();
-    centerPlay.style.display = "block";
+    video.src = src;
   }
 }
 
-// progress update
+loadVideo(currentSrc);
+
+// autoplay
+video.addEventListener("loadedmetadata", () => video.play());
+
+// controls
+function togglePlay() {
+  video.paused ? video.play() : video.pause();
+}
+
+function rewind() { video.currentTime -= 10; }
+function forward() { video.currentTime += 10; }
+
 video.ontimeupdate = () => {
   if (video.duration) {
     progress.value = (video.currentTime / video.duration) * 100;
   }
 };
 
-// seek
 progress.oninput = () => {
-  if (video.duration) {
-    video.currentTime = (progress.value / 100) * video.duration;
-  }
+  video.currentTime = (progress.value / 100) * video.duration;
 };
 
-// skip
-function rewind() {
-  video.currentTime -= 10;
-}
-
-function forward() {
-  video.currentTime += 10;
-}
-
-// fullscreen (mobile friendly)
+// fullscreen
 function toggleFullscreen() {
-  const el = document.documentElement;
   if (!document.fullscreenElement) {
-    if (el.requestFullscreen) el.requestFullscreen();
+    document.documentElement.requestFullscreen();
   } else {
     document.exitFullscreen();
   }
 }
 
-// icon toggle
+// center play
+centerPlay.onclick = togglePlay;
 video.onplay = () => centerPlay.style.display = "none";
 video.onpause = () => centerPlay.style.display = "block";
+
+// back
+function goBack() {
+  history.back();
+}
+
+/* 🔥 GESTURES */
+
+// swipe seek
+let startX = 0;
+
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  let diff = endX - startX;
+
+  if (diff > 50) rewind();
+  if (diff < -50) forward();
+});
 </script>
 
 </body>
